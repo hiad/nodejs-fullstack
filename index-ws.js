@@ -1,7 +1,6 @@
 const express = require("express");
 const server = require("http").createServer();
 const app = express();
-const PORT = 3000;
 
 app.get("/", function (req, res) {
   res.sendFile("index.html", { root: __dirname });
@@ -9,8 +8,14 @@ app.get("/", function (req, res) {
 
 server.on("request", app);
 
-server.listen(PORT, function () {
-  console.log("Listening on " + PORT);
+process.on("SIGINT", () => {
+  server.close(() => {
+    shutdownDB();
+  });
+});
+
+server.listen(3000, function () {
+  console.log("Listening on 3000");
 });
 
 /** Websocket **/
@@ -23,6 +28,10 @@ wss.on("connection", function connection(ws) {
 
   console.log("clients connected: ", numClients);
 
+  // Log number of visitors at current moment
+  db.run(`INSERT INTO visitors (count, time)
+    VALUES (${numClients}, datetime('now'))`);
+
   wss.broadcast(`Current visitors: ${numClients}`);
 
   if (ws.readyState === ws.OPEN) {
@@ -34,9 +43,7 @@ wss.on("connection", function connection(ws) {
     console.log("A client has disconnected");
   });
 
-  ws.on("error", function error() {
-    //
-  });
+  ws.on("error", function error() {});
 });
 
 /**
