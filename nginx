@@ -1,0 +1,13 @@
+server {
+   listen 80 default_server;
+   listen [::]:80 default_server;
+
+   root /var/www/nodejs-fullstack;
+   index index.html;
+
+   server_name api.hectoralcazar.com;
+
+   location / {
+     proxy_pass http://127.0.0.1:3000/;
+   }
+}
