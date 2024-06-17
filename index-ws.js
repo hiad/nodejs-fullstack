@@ -64,7 +64,7 @@ wss.broadcast = function broadcast(data) {
 const sqlite3 = require("sqlite3").verbose();
 const db = new sqlite3.Database(":memory:");
 
-// .seralize ensures DB is set up before any queries
+// .serialize ensures DB is set up before any queries
 db.serialize(() => {
   db.run(`CREATE TABLE visitors (
       count INTEGER,
